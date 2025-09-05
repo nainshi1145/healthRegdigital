@@ -1,0 +1,113 @@
+1. User ID / Health ID Generate karna
+
+Jab user "NEXT" dabaye → backend ek unique Health ID generate kare.
+Example: HLTH-20250905-12345 (prefix + date + random number).
+
+Ye ID user ko confirmation page / popup me show karna + backend DB me save karna.
+
+User is ID ko future login ke liye use karega.
+
+
+
+---
+
+2. Detailed Health Profile Section
+
+NEXT ke baad ek Health Profile Form open ho:
+
+Chronic diseases (kulya bimari jaise: diabetes, TB, BP etc.) → checkbox/dropdown.
+
+Allergies (penicillin, dust, food etc.).
+
+Emergency Contact.
+
+Current Medication.
+
+
+Ye sab backend me uske Health ID ke sath link ho jaye.
+
+
+---
+
+3. Voice Input Option (Speech-to-Text)
+
+Workers ko typing mushkil hota hai → tum Web Speech API (JS) use kar sakti ho frontend me.
+
+Input fields ke sath ek 🎤 button hoga → dabane pe worker bolke fill kar paayega.
+
+Backend ko simple text hi milega.
+
+
+Example:
+
+const recognition = new(window.SpeechRecognition || window.webkitSpeechRecognition)();
+recognition.lang = 'hi-IN';  // Hindi recognition
+recognition.onresult = (event) => {
+  document.getElementById("disease").value = event.results[0][0].transcript;
+};
+
+
+---
+
+4. Document Scanner / QR Scanner
+
+Workers ke documents (Aadhar, medical reports) ko scan karne ka option ho.
+
+react-qr-scanner (for QR/Barcode) ya Tesseract.js (OCR text extraction from images) use kar sakte ho.
+
+Example: Scan Aadhar → auto fill Aadhar field.
+
+
+
+---
+
+5. Multi-Language Support
+
+UI ko Hindi, English, Malayalam (Kerala workers ke liye) jaisi languages me toggle karne ka option do.
+
+Frontend me ek dropdown 🌐 Language aur i18n library se translations handle ho.
+
+
+
+---
+
+6. Security
+
+Aadhaar encrypt karke DB me store karo.
+
+Password ya OTP-based login for workers.
+
+Health ID ke sath data fetch karte waqt authentication check ho.
+
+
+
+---
+
+7. Dashboard for Worker
+
+Login with Health ID → dekh sakta hai:
+
+Apna profile
+
+Past medical history
+
+Reports uploaded
+
+Vaccination details
+
+
+
+
+---
+
+🔹 Tech Stack Suggestion (Replit Friendly)
+
+Frontend: HTML + CSS + JS (Speech API, OCR/QR libraries)
+
+Backend: Flask (Python) / Node.js
+
+Database: SQLite / MongoDB (simple aur lightweight)
+
+
+
+---

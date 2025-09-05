@@ -1,4 +1,4 @@
-/* Digital Health Registration - Black Theme CSS */
+/* Digital Health Registration - Enhanced Black Theme CSS */
 
 * {
     margin: 0;
@@ -15,7 +15,7 @@ body {
 }
 
 .container {
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
     padding: 20px;
     min-height: 100vh;
@@ -23,6 +23,30 @@ body {
     flex-direction: column;
 }
 
+/* Language Selector */
+.language-selector {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.language-selector select {
+    background-color: #222;
+    color: #ffffff;
+    border: 2px solid #00ff88;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.language-selector select:focus {
+    outline: none;
+    box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+/* Header */
 header {
     text-align: center;
     margin-bottom: 40px;
@@ -43,6 +67,7 @@ header p {
     font-style: italic;
 }
 
+/* Main Content */
 main {
     flex: 1;
     display: flex;
@@ -56,8 +81,9 @@ main {
     border-radius: 15px;
     padding: 40px;
     width: 100%;
-    max-width: 600px;
+    max-width: 700px;
     box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+    min-height: 500px;
 }
 
 h2 {
@@ -68,6 +94,7 @@ h2 {
     text-shadow: 0 0 5px #00ff88;
 }
 
+/* Form Groups */
 .form-group {
     margin-bottom: 25px;
 }
@@ -80,10 +107,48 @@ label {
     font-size: 1.1rem;
 }
 
+/* Input with Microphone */
+.input-with-mic {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.input-with-mic input,
+.input-with-mic textarea {
+    flex: 1;
+}
+
+.mic-btn {
+    background-color: #333;
+    border: 2px solid #00ff88;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.mic-btn:hover {
+    background-color: #00ff88;
+    transform: scale(1.1);
+}
+
+.mic-btn:disabled {
+    background-color: #ff4444;
+    border-color: #ff4444;
+    cursor: not-allowed;
+}
+
+/* Form Controls */
 input[type="text"],
 input[type="email"],
 input[type="date"],
-select {
+select,
+textarea {
     width: 100%;
     padding: 15px;
     background-color: #222222;
@@ -92,12 +157,14 @@ select {
     color: #ffffff;
     font-size: 1rem;
     transition: all 0.3s ease;
+    resize: vertical;
 }
 
 input[type="text"]:focus,
 input[type="email"]:focus,
 input[type="date"]:focus,
-select:focus {
+select:focus,
+textarea:focus {
     outline: none;
     border-color: #00ff88;
     box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
@@ -108,6 +175,11 @@ select option {
     color: #ffffff;
 }
 
+textarea {
+    min-height: 80px;
+    font-family: inherit;
+}
+
 small {
     color: #cccccc;
     font-size: 0.9rem;
@@ -115,11 +187,13 @@ small {
     display: block;
 }
 
+/* Buttons */
 .form-buttons {
     display: flex;
     gap: 15px;
     justify-content: center;
     margin-top: 30px;
+    flex-wrap: wrap;
 }
 
 button {
@@ -133,6 +207,7 @@ button {
     cursor: pointer;
     transition: all 0.3s ease;
     text-transform: uppercase;
+    min-width: 150px;
 }
 
 button:hover {
@@ -153,8 +228,54 @@ button:disabled {
     box-shadow: none;
 }
 
-#submitBtn {
-    display: none;
+.action-btn {
+    background-color: #333;
+    color: #00ff88;
+    border: 2px solid #00ff88;
+    padding: 10px 20px;
+    margin: 5px;
+    min-width: auto;
+}
+
+.action-btn:hover {
+    background-color: #00ff88;
+    color: #000;
+}
+
+/* Health ID Section */
+.health-id-section {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.health-id-display {
+    margin: 30px 0;
+}
+
+.health-id-card {
+    background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
+    border: 3px solid #00ff88;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 0 25px rgba(0, 255, 136, 0.4);
+}
+
+.health-id-card h3 {
+    font-size: 2.5rem;
+    color: #00ff88;
+    margin-bottom: 15px;
+    text-shadow: 0 0 10px #00ff88;
+    letter-spacing: 2px;
+}
+
+.health-id-card p {
+    font-size: 1.1rem;
+    color: #cccccc;
+}
+
+/* Health Profile Section */
+.health-profile-section {
+    animation: slideIn 0.5s ease;
 }
 
 /* Fingerprint Section */
@@ -203,12 +324,102 @@ button:disabled {
 .scan-success p {
     font-size: 1.1rem;
     color: #cccccc;
+    margin-bottom: 20px;
+}
+
+.success-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Login Section */
+.login-section {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+/* Dashboard Section */
+.dashboard-section {
+    padding: 20px;
+}
+
+.user-profile {
+    margin-bottom: 30px;
+}
+
+.profile-card {
+    background-color: #1a1a1a;
+    border: 2px solid #333;
+    border-radius: 15px;
+    padding: 30px;
+    text-align: left;
+}
+
+.profile-card h3 {
+    color: #00ff88;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.profile-card p {
+    margin-bottom: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #333;
+}
+
+.profile-card strong {
+    color: #00ff88;
+    display: inline-block;
+    width: 160px;
+}
+
+.health-details {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 2px solid #00ff88;
+}
+
+.health-details h4 {
+    color: #00ff88;
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #111;
+    border-top: 2px solid #333;
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    z-index: 1000;
+}
+
+.bottom-nav button {
+    background-color: #333;
+    color: #00ff88;
+    border: 2px solid #00ff88;
+    padding: 12px 25px;
+    min-width: 120px;
+}
+
+.bottom-nav button:hover {
+    background-color: #00ff88;
+    color: #000;
 }
 
 /* Message Area */
 .message-area {
     position: fixed;
-    top: 20px;
+    top: 80px;
     right: 20px;
     z-index: 1000;
     max-width: 400px;
@@ -220,6 +431,7 @@ button:disabled {
     margin-bottom: 10px;
     font-weight: bold;
     animation: slideIn 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .message.success {
@@ -234,6 +446,7 @@ button:disabled {
     border: 2px solid #cc0000;
 }
 
+/* Animations */
 @keyframes slideIn {
     from {
         transform: translateX(100%);
@@ -242,6 +455,17 @@ button:disabled {
     to {
         transform: translateX(0);
         opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
@@ -271,6 +495,36 @@ button:disabled {
         padding: 20px 30px;
         font-size: 1.1rem;
     }
+    
+    .health-id-card h3 {
+        font-size: 1.8rem;
+        letter-spacing: 1px;
+    }
+    
+    .input-with-mic {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .mic-btn {
+        align-self: flex-end;
+        width: 50px;
+        height: 50px;
+    }
+    
+    .success-actions {
+        flex-direction: column;
+    }
+    
+    .bottom-nav {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .profile-card strong {
+        width: 120px;
+        font-size: 0.9rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -285,7 +539,76 @@ button:disabled {
     input[type="text"],
     input[type="email"],
     input[type="date"],
-    select {
+    select,
+    textarea {
         padding: 12px;
+    }
+    
+    .language-selector {
+        position: relative;
+        top: auto;
+        right: auto;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    
+    .health-id-card {
+        padding: 20px;
+    }
+    
+    .health-id-card h3 {
+        font-size: 1.5rem;
+    }
+}
+
+/* Loading Animation */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #333;
+    border-radius: 50%;
+    border-top-color: #00ff88;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Hide sections by default */
+#healthIdSection,
+#healthProfileSection,
+#fingerprintSection,
+#loginSection,
+#dashboardSection {
+    display: none;
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .form-container {
+        border-color: #ffffff;
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    }
+    
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="date"]:focus,
+    select:focus,
+    textarea:focus {
+        border-color: #ffffff;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
     }
 }

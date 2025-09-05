@@ -8,38 +8,57 @@
 </head>
 <body>
     <div class="container">
+        <!-- Language Selector -->
+        <div class="language-selector">
+            <select id="languageSelect">
+                <option value="en">🇺🇸 English</option>
+                <option value="hi">🇮🇳 हिंदी</option>
+                <option value="ml">🇮🇳 മലയാളം</option>
+            </select>
+        </div>
+
         <header>
-            <h1>Digital Health Registration</h1>
-            <p>Your digital key to a healthier future</p>
+            <h1 id="mainTitle">Digital Health Registration</h1>
+            <p id="subtitle">Your digital key to a healthier future</p>
         </header>
 
         <main>
             <div class="form-container">
-                <form id="registrationForm">
-                    <h2>Registration Form</h2>
+                <!-- Basic Registration Form -->
+                <form id="basicForm">
+                    <h2 id="formTitle">Registration Form</h2>
                     
                     <div class="form-group">
-                        <label for="name">Full Name:</label>
-                        <input type="text" id="name" name="name" required>
+                        <label for="name" id="nameLabel">Full Name:</label>
+                        <div class="input-with-mic">
+                            <input type="text" id="name" name="name" required>
+                            <button type="button" class="mic-btn" onclick="startVoiceInput('name')">🎤</button>
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="date_of_birth">Date of Birth:</label>
+                        <label for="date_of_birth" id="dobLabel">Date of Birth:</label>
                         <input type="date" id="date_of_birth" name="date_of_birth" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="city">City:</label>
-                        <input type="text" id="city" name="city" required>
+                        <label for="city" id="cityLabel">City:</label>
+                        <div class="input-with-mic">
+                            <input type="text" id="city" name="city" required>
+                            <button type="button" class="mic-btn" onclick="startVoiceInput('city')">🎤</button>
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="email">Email:</label>
-                        <input type="email" id="email" name="email" required>
+                        <label for="email" id="emailLabel">Email:</label>
+                        <div class="input-with-mic">
+                            <input type="email" id="email" name="email" required>
+                            <button type="button" class="mic-btn" onclick="startVoiceInput('email')">🎤</button>
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="blood_group">Blood Group:</label>
+                        <label for="blood_group" id="bloodGroupLabel">Blood Group:</label>
                         <select id="blood_group" name="blood_group" required>
                             <option value="">Select Blood Group</option>
                             <option value="A+">A+</option>
@@ -54,70 +73,305 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="aadhar_number">Aadhar Number:</label>
+                        <label for="aadhar_number" id="aadharLabel">Aadhar Number:</label>
                         <input type="text" id="aadhar_number" name="aadhar_number" pattern="[0-9]{12}" maxlength="12" required>
-                        <small>Enter 12-digit Aadhar number</small>
+                        <small id="aadharHelp">Enter 12-digit Aadhar number</small>
                     </div>
 
                     <div class="form-buttons">
-                        <button type="button" id="nextBtn" onclick="validateAndProceed()">Next</button>
-                        <button type="submit" id="submitBtn">Submit</button>
+                        <button type="button" id="nextBtn" onclick="generateHealthID()">Next</button>
                     </div>
                 </form>
 
+                <!-- Health ID Display -->
+                <div id="healthIdSection" class="health-id-section" style="display: none;">
+                    <h2 id="healthIdTitle">Your Health ID Generated!</h2>
+                    <div class="health-id-display">
+                        <div class="health-id-card">
+                            <h3 id="healthIdValue"></h3>
+                            <p id="healthIdMessage">Please save this Health ID for future login</p>
+                        </div>
+                    </div>
+                    <div class="form-buttons">
+                        <button type="button" id="proceedToProfileBtn" onclick="showHealthProfile()">Continue to Health Profile</button>
+                    </div>
+                </div>
+
+                <!-- Health Profile Form -->
+                <div id="healthProfileSection" class="health-profile-section" style="display: none;">
+                    <h2 id="healthProfileTitle">Detailed Health Profile</h2>
+                    <form id="healthProfileForm">
+                        
+                        <div class="form-group">
+                            <label for="chronic_diseases" id="chronicDiseasesLabel">Chronic Diseases:</label>
+                            <div class="input-with-mic">
+                                <textarea id="chronic_diseases" name="chronic_diseases" rows="3" placeholder="e.g., Diabetes, Hypertension, Asthma"></textarea>
+                                <button type="button" class="mic-btn" onclick="startVoiceInput('chronic_diseases')">🎤</button>
+                            </div>
+                            <small id="chronicDiseasesHelp">List any long-term health conditions</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="allergies" id="allergiesLabel">Allergies:</label>
+                            <div class="input-with-mic">
+                                <textarea id="allergies" name="allergies" rows="3" placeholder="e.g., Penicillin, Dust, Peanuts"></textarea>
+                                <button type="button" class="mic-btn" onclick="startVoiceInput('allergies')">🎤</button>
+                            </div>
+                            <small id="allergiesHelp">List any known allergies</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="emergency_contact" id="emergencyContactLabel">Emergency Contact:</label>
+                            <div class="input-with-mic">
+                                <input type="text" id="emergency_contact" name="emergency_contact" placeholder="Name and Phone Number">
+                                <button type="button" class="mic-btn" onclick="startVoiceInput('emergency_contact')">🎤</button>
+                            </div>
+                            <small id="emergencyContactHelp">Emergency contact person and phone number</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="current_medication" id="currentMedicationLabel">Current Medication:</label>
+                            <div class="input-with-mic">
+                                <textarea id="current_medication" name="current_medication" rows="3" placeholder="e.g., Metformin 500mg daily"></textarea>
+                                <button type="button" class="mic-btn" onclick="startVoiceInput('current_medication')">🎤</button>
+                            </div>
+                            <small id="currentMedicationHelp">List current medications with dosage</small>
+                        </div>
+
+                        <div class="form-buttons">
+                            <button type="submit" id="completeRegistrationBtn">Complete Registration</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Fingerprint Section -->
                 <div id="fingerprintSection" class="fingerprint-section" style="display: none;">
-                    <h2>Health Scan</h2>
-                    <p>Place your thumb on the sensor for health screening</p>
+                    <h2 id="fingerprintTitle">Health Scan</h2>
+                    <p id="fingerprintMessage">Place your thumb on the sensor for health screening</p>
                     <button type="button" id="fingerprintBtn" class="fingerprint-btn">
                         <span class="fingerprint-icon">👆</span>
-                        Fingerprint Sensor
+                        <span id="fingerprintBtnText">Fingerprint Sensor</span>
                     </button>
                     <div id="scanResult" class="scan-result"></div>
                 </div>
+
+                <!-- Login Section -->
+                <div id="loginSection" class="login-section" style="display: none;">
+                    <h2 id="loginTitle">Worker Login</h2>
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label for="loginHealthId" id="loginHealthIdLabel">Health ID:</label>
+                            <div class="input-with-mic">
+                                <input type="text" id="loginHealthId" name="loginHealthId" placeholder="HLTH-YYYYMMDD-XXXXX" required>
+                                <button type="button" class="mic-btn" onclick="startVoiceInput('loginHealthId')">🎤</button>
+                            </div>
+                        </div>
+                        <div class="form-buttons">
+                            <button type="submit" id="loginBtn">Login</button>
+                            <button type="button" onclick="showRegistration()">New Registration</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Dashboard Section -->
+                <div id="dashboardSection" class="dashboard-section" style="display: none;">
+                    <h2 id="dashboardTitle">Worker Dashboard</h2>
+                    <div id="userProfile" class="user-profile"></div>
+                    <div class="form-buttons">
+                        <button type="button" onclick="logout()">Logout</button>
+                    </div>
+                </div>
             </div>
         </main>
+
+        <nav class="bottom-nav">
+            <button onclick="showRegistration()" id="navRegister">Register</button>
+            <button onclick="showLogin()" id="navLogin">Login</button>
+        </nav>
 
         <div id="messageArea" class="message-area"></div>
     </div>
 
     <script>
-        let currentUserId = null;
+        let currentHealthId = null;
+        let currentUserData = null;
+        let currentLanguage = 'en';
 
-        // Registration form submission
-        document.getElementById('registrationForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData);
-            
-            try {
-                const response = await fetch('/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data)
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    currentUserId = result.userId;
-                    showMessage(result.message, 'success');
-                    document.getElementById('registrationForm').style.display = 'none';
-                    document.getElementById('fingerprintSection').style.display = 'block';
-                } else {
-                    showMessage(result.message, 'error');
-                }
-            } catch (error) {
-                showMessage('Registration failed. Please try again.', 'error');
-                console.error('Registration error:', error);
+        // Language translations
+        const translations = {
+            en: {
+                mainTitle: "Digital Health Registration",
+                subtitle: "Your digital key to a healthier future",
+                formTitle: "Registration Form",
+                nameLabel: "Full Name:",
+                dobLabel: "Date of Birth:",
+                cityLabel: "City:",
+                emailLabel: "Email:",
+                bloodGroupLabel: "Blood Group:",
+                aadharLabel: "Aadhar Number:",
+                aadharHelp: "Enter 12-digit Aadhar number",
+                healthIdTitle: "Your Health ID Generated!",
+                healthIdMessage: "Please save this Health ID for future login",
+                healthProfileTitle: "Detailed Health Profile",
+                chronicDiseasesLabel: "Chronic Diseases:",
+                chronicDiseasesHelp: "List any long-term health conditions",
+                allergiesLabel: "Allergies:",
+                allergiesHelp: "List any known allergies",
+                emergencyContactLabel: "Emergency Contact:",
+                emergencyContactHelp: "Emergency contact person and phone number",
+                currentMedicationLabel: "Current Medication:",
+                currentMedicationHelp: "List current medications with dosage",
+                fingerprintTitle: "Health Scan",
+                fingerprintMessage: "Place your thumb on the sensor for health screening",
+                fingerprintBtnText: "Fingerprint Sensor",
+                loginTitle: "Worker Login",
+                loginHealthIdLabel: "Health ID:",
+                dashboardTitle: "Worker Dashboard",
+                navRegister: "Register",
+                navLogin: "Login"
+            },
+            hi: {
+                mainTitle: "डिजिटल स्वास्थ्य पंजीकरण",
+                subtitle: "एक स्वस्थ भविष्य की आपकी डिजिटल कुंजी",
+                formTitle: "पंजीकरण फॉर्म",
+                nameLabel: "पूरा नाम:",
+                dobLabel: "जन्म तिथि:",
+                cityLabel: "शहर:",
+                emailLabel: "ईमेल:",
+                bloodGroupLabel: "रक्त समूह:",
+                aadharLabel: "आधार नंबर:",
+                aadharHelp: "12 अंकों का आधार नंबर दर्ज करें",
+                healthIdTitle: "आपका स्वास्थ्य आईडी तैयार!",
+                healthIdMessage: "भविष्य में लॉगिन के लिए इस स्वास्थ्य आईडी को सेव करें",
+                healthProfileTitle: "विस्तृत स्वास्थ्य प्रोफ़ाइल",
+                chronicDiseasesLabel: "पुरानी बीमारियां:",
+                chronicDiseasesHelp: "किसी भी दीर्घकालिक स्वास्थ्य स्थितियों को सूचीबद्ध करें",
+                allergiesLabel: "एलर्जी:",
+                allergiesHelp: "किसी भी ज्ञात एलर्जी को सूचीबद्ध करें",
+                emergencyContactLabel: "आपातकालीन संपर्क:",
+                emergencyContactHelp: "आपातकालीन संपर्क व्यक्ति और फोन नंबर",
+                currentMedicationLabel: "वर्तमान दवा:",
+                currentMedicationHelp: "खुराक के साथ वर्तमान दवाओं की सूची बनाएं",
+                fingerprintTitle: "स्वास्थ्य स्कैन",
+                fingerprintMessage: "स्वास्थ्य जांच के लिए अपना अंगूठा सेंसर पर रखें",
+                fingerprintBtnText: "फिंगरप्रिंट सेंसर",
+                loginTitle: "कार्यकर्ता लॉगिन",
+                loginHealthIdLabel: "स्वास्थ्य आईडी:",
+                dashboardTitle: "कार्यकर्ता डैशबोर्ड",
+                navRegister: "पंजीकरण",
+                navLogin: "लॉगिन"
+            },
+            ml: {
+                mainTitle: "ഡിജിറ്റൽ ആരോഗ്യ രജിസ്ട്രേഷൻ",
+                subtitle: "നിങ്ങളുടെ ആരോഗ്യകരമായ ഭാവിയിലേക്കുള്ള ഡിജിറ്റൽ താക്കോൽ",
+                formTitle: "രജിസ്ട്രേഷൻ ഫോം",
+                nameLabel: "പൂർണ്ണ നാമം:",
+                dobLabel: "ജനന തീയതി:",
+                cityLabel: "നഗരം:",
+                emailLabel: "ഇമെയിൽ:",
+                bloodGroupLabel: "രക്തഗ്രൂപ്പ്:",
+                aadharLabel: "ആധാർ നമ്പർ:",
+                aadharHelp: "12 അക്ക ആധാർ നമ്പർ നൽകുക",
+                healthIdTitle: "നിങ്ങളുടെ ആരോഗ്യ ഐഡി സൃഷ്ടിച്ചു!",
+                healthIdMessage: "ഭാവിയിലെ ലോഗിനുകൾക്കായി ഈ ആരോഗ്യ ഐഡി സൂക്ഷിക്കുക",
+                healthProfileTitle: "വിശദമായ ആരോഗ്യ പ്രൊഫൈൽ",
+                chronicDiseasesLabel: "ദീർഘകാല രോഗങ്ങൾ:",
+                chronicDiseasesHelp: "എന്തെങ്കിലും ദീർഘകാല ആരോഗ്യ അവസ്ഥകൾ പട്ടികപ്പെടുത്തുക",
+                allergiesLabel: "അലർജികൾ:",
+                allergiesHelp: "അറിയാവുന്ന അലർജികൾ പട്ടികപ്പെടുത്തുക",
+                emergencyContactLabel: "അടിയന്തര ബന്ധപ്പെടേണ്ട വ്യക്തി:",
+                emergencyContactHelp: "അടിയന്തര ബന്ധപ്പെടേണ്ട വ്യക്തിയും ഫോൺ നമ്പറും",
+                currentMedicationLabel: "നിലവിലെ മരുന്നുകൾ:",
+                currentMedicationHelp: "ഡോസേജ് സഹിതം നിലവിലെ മരുന്നുകൾ പട്ടികപ്പെടുത്തുക",
+                fingerprintTitle: "ആരോഗ്യ സ്കാൻ",
+                fingerprintMessage: "ആരോഗ്യ പരിശോധനയ്ക്കായി നിങ്ങളുടെ തള്ളവിരൽ സെൻസറിൽ വയ്ക്കുക",
+                fingerprintBtnText: "ഫിംഗർപ്രിന്റ് സെൻസർ",
+                loginTitle: "തൊഴിലാളി ലോഗിൻ",
+                loginHealthIdLabel: "ആരോഗ്യ ഐഡി:",
+                dashboardTitle: "തൊഴിലാളി ഡാഷ്ബോർഡ്",
+                navRegister: "രജിസ്റ്റർ",
+                navLogin: "ലോഗിൻ"
+            }
+        };
+
+        // Initialize Speech Recognition
+        let recognition = null;
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+        }
+
+        // Language change handler
+        document.getElementById('languageSelect').addEventListener('change', function() {
+            currentLanguage = this.value;
+            updateLanguage();
+            if (recognition) {
+                recognition.lang = currentLanguage === 'hi' ? 'hi-IN' : 
+                                  currentLanguage === 'ml' ? 'ml-IN' : 'en-US';
             }
         });
 
-        // Validate form and show next step
-        function validateAndProceed() {
-            const form = document.getElementById('registrationForm');
+        // Update language function
+        function updateLanguage() {
+            const t = translations[currentLanguage];
+            Object.keys(t).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    if (element.tagName === 'INPUT' || element.tagName === 'BUTTON') {
+                        if (element.type === 'submit' || element.type === 'button') {
+                            element.textContent = t[key];
+                        } else {
+                            element.placeholder = t[key];
+                        }
+                    } else {
+                        element.textContent = t[key];
+                    }
+                }
+            });
+        }
+
+        // Voice input function
+        function startVoiceInput(fieldId) {
+            if (!recognition) {
+                showMessage('Voice input not supported in this browser', 'error');
+                return;
+            }
+
+            const field = document.getElementById(fieldId);
+            const micBtn = event.target;
+            
+            micBtn.textContent = '🔴';
+            micBtn.disabled = true;
+            
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                field.value = transcript;
+                micBtn.textContent = '🎤';
+                micBtn.disabled = false;
+            };
+            
+            recognition.onerror = function() {
+                showMessage('Voice input failed. Please try again.', 'error');
+                micBtn.textContent = '🎤';
+                micBtn.disabled = false;
+            };
+            
+            recognition.onend = function() {
+                micBtn.textContent = '🎤';
+                micBtn.disabled = false;
+            };
+            
+            recognition.start();
+        }
+
+        // Generate Health ID
+        async function generateHealthID() {
+            const form = document.getElementById('basicForm');
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+            
+            // Validate form
             const inputs = form.querySelectorAll('input[required], select[required]');
             let isValid = true;
             
@@ -130,25 +384,91 @@
                 }
             });
             
-            if (isValid) {
-                showMessage('Form validation passed. Click Submit to register.', 'success');
-                document.getElementById('submitBtn').style.display = 'inline-block';
-            } else {
+            if (!isValid) {
                 showMessage('Please fill in all required fields.', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/generate-health-id', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentHealthId = result.healthId;
+                    currentUserData = result.userData;
+                    document.getElementById('healthIdValue').textContent = result.healthId;
+                    document.getElementById('basicForm').style.display = 'none';
+                    document.getElementById('healthIdSection').style.display = 'block';
+                    showMessage(result.message, 'success');
+                } else {
+                    showMessage(result.message, 'error');
+                }
+            } catch (error) {
+                showMessage('Failed to generate Health ID. Please try again.', 'error');
+                console.error('Health ID generation error:', error);
             }
         }
 
+        // Show health profile form
+        function showHealthProfile() {
+            document.getElementById('healthIdSection').style.display = 'none';
+            document.getElementById('healthProfileSection').style.display = 'block';
+        }
+
+        // Complete registration with health profile
+        document.getElementById('healthProfileForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const profileFormData = new FormData(this);
+            const profileData = Object.fromEntries(profileFormData);
+            
+            const completeData = {
+                health_id: currentHealthId,
+                ...currentUserData,
+                ...profileData
+            };
+            
+            try {
+                const response = await fetch('/complete-registration', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(completeData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage(result.message, 'success');
+                    document.getElementById('healthProfileSection').style.display = 'none';
+                    document.getElementById('fingerprintSection').style.display = 'block';
+                } else {
+                    showMessage(result.message, 'error');
+                }
+            } catch (error) {
+                showMessage('Registration failed. Please try again.', 'error');
+                console.error('Registration error:', error);
+            }
+        });
+
         // Fingerprint scanning
         document.getElementById('fingerprintBtn').addEventListener('click', async function() {
-            if (!currentUserId) {
-                showMessage('Please register first.', 'error');
+            if (!currentHealthId) {
+                showMessage('Please complete registration first.', 'error');
                 return;
             }
             
             this.disabled = true;
-            this.innerHTML = '<span class="fingerprint-icon">🔄</span> Scanning...';
+            this.innerHTML = '<span class="fingerprint-icon">🔄</span> <span>Scanning...</span>';
             
-            // Simulate fingerprint scanning process
             setTimeout(async () => {
                 try {
                     const response = await fetch('/fingerprint-scan', {
@@ -156,7 +476,7 @@
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({ userId: currentUserId })
+                        body: JSON.stringify({ healthId: currentHealthId })
                     });
                     
                     const result = await response.json();
@@ -166,6 +486,10 @@
                             <div class="scan-success">
                                 <h3>✅ ${result.message}</h3>
                                 <p>${result.healthStatus}</p>
+                                <div class="success-actions">
+                                    <button onclick="showLogin()" class="action-btn">Login with Health ID</button>
+                                    <button onclick="showRegistration()" class="action-btn">New Registration</button>
+                                </div>
                             </div>
                         `;
                         showMessage('Health scan completed successfully!', 'success');
@@ -178,9 +502,103 @@
                 }
                 
                 this.disabled = false;
-                this.innerHTML = '<span class="fingerprint-icon">👆</span> Fingerprint Sensor';
-            }, 3000); // 3 second simulation
+                this.innerHTML = '<span class="fingerprint-icon">👆</span> <span id="fingerprintBtnText">Fingerprint Sensor</span>';
+                updateLanguage();
+            }, 3000);
         });
+
+        // Login functionality
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const healthId = document.getElementById('loginHealthId').value;
+            
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ healthId })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showDashboard(result.user);
+                    showMessage(result.message, 'success');
+                } else {
+                    showMessage(result.message, 'error');
+                }
+            } catch (error) {
+                showMessage('Login failed. Please try again.', 'error');
+                console.error('Login error:', error);
+            }
+        });
+
+        // Show dashboard
+        function showDashboard(user) {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('dashboardSection').style.display = 'block';
+            
+            document.getElementById('userProfile').innerHTML = `
+                <div class="profile-card">
+                    <h3>👤 ${user.name}</h3>
+                    <p><strong>Health ID:</strong> ${user.healthId}</p>
+                    <p><strong>Email:</strong> ${user.email}</p>
+                    <p><strong>City:</strong> ${user.city}</p>
+                    <p><strong>Blood Group:</strong> ${user.bloodGroup}</p>
+                    <p><strong>Date of Birth:</strong> ${user.dateOfBirth}</p>
+                    <p><strong>Fingerprint Scanned:</strong> ${user.fingerprintScanned ? '✅ Yes' : '❌ No'}</p>
+                    
+                    <div class="health-details">
+                        <h4>🏥 Health Information</h4>
+                        <p><strong>Chronic Diseases:</strong> ${user.chronicDiseases || 'None reported'}</p>
+                        <p><strong>Allergies:</strong> ${user.allergies || 'None reported'}</p>
+                        <p><strong>Emergency Contact:</strong> ${user.emergencyContact || 'Not provided'}</p>
+                        <p><strong>Current Medication:</strong> ${user.currentMedication || 'None reported'}</p>
+                    </div>
+                    
+                    <p><strong>Registered:</strong> ${new Date(user.createdAt).toLocaleDateString()}</p>
+                </div>
+            `;
+        }
+
+        // Navigation functions
+        function showRegistration() {
+            hideAllSections();
+            document.getElementById('basicForm').style.display = 'block';
+            resetForms();
+        }
+
+        function showLogin() {
+            hideAllSections();
+            document.getElementById('loginSection').style.display = 'block';
+        }
+
+        function logout() {
+            hideAllSections();
+            document.getElementById('loginSection').style.display = 'block';
+            currentHealthId = null;
+            currentUserData = null;
+            resetForms();
+            showMessage('Logged out successfully', 'success');
+        }
+
+        function hideAllSections() {
+            const sections = ['basicForm', 'healthIdSection', 'healthProfileSection', 'fingerprintSection', 'loginSection', 'dashboardSection'];
+            sections.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) element.style.display = 'none';
+            });
+        }
+
+        function resetForms() {
+            document.getElementById('basicForm').reset();
+            document.getElementById('healthProfileForm').reset();
+            document.getElementById('loginForm').reset();
+            document.getElementById('scanResult').innerHTML = '';
+        }
 
         // Utility function to show messages
         function showMessage(message, type) {
@@ -196,6 +614,10 @@
         document.getElementById('aadhar_number').addEventListener('input', function() {
             this.value = this.value.replace(/\D/g, '');
         });
+
+        // Initialize app
+        updateLanguage();
+        showRegistration();
     </script>
 </body>
 </html>
