@@ -1,0 +1,291 @@
+/* Digital Health Registration - Black Theme CSS */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #000000;
+    color: #ffffff;
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 30px 0;
+    border-bottom: 2px solid #333;
+}
+
+header h1 {
+    font-size: 2.8rem;
+    color: #00ff88;
+    margin-bottom: 10px;
+    text-shadow: 0 0 10px #00ff88;
+}
+
+header p {
+    font-size: 1.2rem;
+    color: #cccccc;
+    font-style: italic;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.form-container {
+    background-color: #111111;
+    border: 2px solid #333;
+    border-radius: 15px;
+    padding: 40px;
+    width: 100%;
+    max-width: 600px;
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+}
+
+h2 {
+    color: #00ff88;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2rem;
+    text-shadow: 0 0 5px #00ff88;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="date"],
+select {
+    width: 100%;
+    padding: 15px;
+    background-color: #222222;
+    border: 2px solid #444;
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="date"]:focus,
+select:focus {
+    outline: none;
+    border-color: #00ff88;
+    box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+select option {
+    background-color: #222222;
+    color: #ffffff;
+}
+
+small {
+    color: #cccccc;
+    font-size: 0.9rem;
+    margin-top: 5px;
+    display: block;
+}
+
+.form-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+button {
+    padding: 15px 30px;
+    background-color: #00ff88;
+    color: #000000;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+
+button:hover {
+    background-color: #00cc6a;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 255, 136, 0.4);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+button:disabled {
+    background-color: #666;
+    color: #999;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+#submitBtn {
+    display: none;
+}
+
+/* Fingerprint Section */
+.fingerprint-section {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.fingerprint-btn {
+    background: linear-gradient(145deg, #00ff88, #00cc6a);
+    padding: 25px 50px;
+    font-size: 1.3rem;
+    border-radius: 50px;
+    margin: 30px 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 8px 25px rgba(0, 255, 136, 0.3);
+}
+
+.fingerprint-icon {
+    font-size: 2rem;
+}
+
+.fingerprint-btn:hover {
+    transform: scale(1.05);
+}
+
+.scan-result {
+    margin-top: 30px;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #1a1a1a;
+    border: 2px solid #333;
+}
+
+.scan-success {
+    color: #00ff88;
+}
+
+.scan-success h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.scan-success p {
+    font-size: 1.1rem;
+    color: #cccccc;
+}
+
+/* Message Area */
+.message-area {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    max-width: 400px;
+}
+
+.message {
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    animation: slideIn 0.3s ease;
+}
+
+.message.success {
+    background-color: #00ff88;
+    color: #000000;
+    border: 2px solid #00cc6a;
+}
+
+.message.error {
+    background-color: #ff4444;
+    color: #ffffff;
+    border: 2px solid #cc0000;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    
+    header h1 {
+        font-size: 2.2rem;
+    }
+    
+    .form-container {
+        padding: 20px;
+    }
+    
+    .form-buttons {
+        flex-direction: column;
+    }
+    
+    button {
+        width: 100%;
+    }
+    
+    .fingerprint-btn {
+        padding: 20px 30px;
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .form-container {
+        padding: 15px;
+    }
+    
+    input[type="text"],
+    input[type="email"],
+    input[type="date"],
+    select {
+        padding: 12px;
+    }
+}
