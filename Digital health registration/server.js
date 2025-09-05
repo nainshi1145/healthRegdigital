@@ -115,7 +115,49 @@ const db = new sqlite3.Database('./health_registration.db', (err) => {
                                                 console.error('Error creating hospitals table:', err.message);
                                             } else {
                                                 console.log('Empaneled hospitals table ready.');
-                                                insertSampleHospitals();
+                                                
+                                                // Create medical images table
+                                                db.run(`CREATE TABLE IF NOT EXISTS medical_images (
+                                                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                                    image_id TEXT UNIQUE NOT NULL,
+                                                    health_id TEXT NOT NULL,
+                                                    image_name TEXT NOT NULL,
+                                                    image_size INTEGER NOT NULL,
+                                                    image_type TEXT NOT NULL,
+                                                    data_url TEXT NOT NULL,
+                                                    upload_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+                                                    FOREIGN KEY (health_id) REFERENCES users (health_id)
+                                                )`, (err) => {
+                                                    if (err) {
+                                                        console.error('Error creating medical images table:', err.message);
+                                                    } else {
+                                                        console.log('Medical images table ready.');
+                                                        
+                                                        // Create consultations table
+                                                        db.run(`CREATE TABLE IF NOT EXISTS consultations (
+                                                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                                            health_id TEXT NOT NULL,
+                                                            patient_name TEXT NOT NULL,
+                                                            subject TEXT NOT NULL,
+                                                            description TEXT NOT NULL,
+                                                            urgency TEXT NOT NULL,
+                                                            preferred_language TEXT NOT NULL,
+                                                            attached_images TEXT,
+                                                            submission_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+                                                            status TEXT DEFAULT 'pending',
+                                                            doctor_response TEXT,
+                                                            response_date DATETIME,
+                                                            FOREIGN KEY (health_id) REFERENCES users (health_id)
+                                                        )`, (err) => {
+                                                            if (err) {
+                                                                console.error('Error creating consultations table:', err.message);
+                                                            } else {
+                                                                console.log('Consultations table ready.');
+                                                                insertSampleHospitals();
+                                                            }
+                                                        });
+                                                    }
+                                                });
                                             }
                                         });
                                     }
@@ -688,6 +730,183 @@ app.post('/login-with-aby', (req, res) => {
                     familyMembers: familyMembers || []
                 }
             });
+        });
+    });
+});
+
+// Medical Image Upload endpoint
+app.post('/upload-medical-image', (req, res) => {
+    const { id, name, size, type, dataUrl, uploadDate, healthId } = req.body;
+    
+    if (!healthId || !id || !dataUrl) {
+        return res.status(400).json({
+            success: false,
+            message: 'Missing required image data'
+        });
+    }
+    
+    // Insert image into database
+    const stmt = db.prepare(`INSERT INTO medical_images 
+        (image_id, health_id, image_name, image_size, image_type, data_url, upload_date) 
+        VALUES (?, ?, ?, ?, ?, ?, ?)`);
+    
+    stmt.run([id, healthId, name, size, type, dataUrl, uploadDate], function(err) {
+        if (err) {
+            console.error('Medical image upload error:', err.message);
+            return res.status(500).json({
+                success: false,
+                message: 'Failed to save medical image'
+            });
+        }
+        
+        res.json({
+            success: true,
+            message: 'Medical image uploaded successfully',
+            imageId: id
+        });
+    });
+});
+
+// Get medical images for a user
+app.get('/medical-images/:healthId', (req, res) => {
+    const { healthId } = req.params;
+    
+    db.all('SELECT * FROM medical_images WHERE health_id = ? ORDER BY upload_date DESC', 
+        [healthId], (err, images) => {
+        if (err) {
+            console.error('Get medical images error:', err.message);
+            return res.status(500).json({
+                success: false,
+                message: 'Failed to retrieve medical images'
+            });
+        }
+        
+        const formattedImages = images.map(img => ({
+            id: img.image_id,
+            name: img.image_name,
+            size: img.image_size,
+            type: img.image_type,
+            dataUrl: img.data_url,
+            uploadDate: img.upload_date,
+            healthId: img.health_id
+        }));
+        
+        res.json({
+            success: true,
+            images: formattedImages
+        });
+    });
+});
+
+// Delete medical image
+app.post('/delete-medical-image', (req, res) => {
+    const { imageId } = req.body;
+    
+    if (!imageId) {
+        return res.status(400).json({
+            success: false,
+            message: 'Image ID is required'
+        });
+    }
+    
+    db.run('DELETE FROM medical_images WHERE image_id = ?', [imageId], function(err) {
+        if (err) {
+            console.error('Delete medical image error:', err.message);
+            return res.status(500).json({
+                success: false,
+                message: 'Failed to delete medical image'
+            });
+        }
+        
+        res.json({
+            success: true,
+            message: 'Medical image deleted successfully'
+        });
+    });
+});
+
+// Submit consultation request
+app.post('/submit-consultation', (req, res) => {
+    const { 
+        healthId, 
+        patientName, 
+        consultationSubject: subject, 
+        consultationDescription: description, 
+        consultationUrgency: urgency, 
+        preferredLanguage, 
+        attachedImages, 
+        submissionDate 
+    } = req.body;
+    
+    if (!healthId || !subject || !description || !urgency) {
+        return res.status(400).json({
+            success: false,
+            message: 'Missing required consultation data'
+        });
+    }
+    
+    const attachedImagesStr = attachedImages ? JSON.stringify(attachedImages) : null;
+    
+    const stmt = db.prepare(`INSERT INTO consultations 
+        (health_id, patient_name, subject, description, urgency, preferred_language, attached_images, submission_date) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`);
+    
+    stmt.run([
+        healthId, 
+        patientName, 
+        subject, 
+        description, 
+        urgency, 
+        preferredLanguage, 
+        attachedImagesStr, 
+        submissionDate
+    ], function(err) {
+        if (err) {
+            console.error('Submit consultation error:', err.message);
+            return res.status(500).json({
+                success: false,
+                message: 'Failed to submit consultation request'
+            });
+        }
+        
+        res.json({
+            success: true,
+            message: 'Consultation request submitted successfully',
+            consultationId: this.lastID
+        });
+    });
+});
+
+// Get consultation history for a user
+app.get('/consultation-history/:healthId', (req, res) => {
+    const { healthId } = req.params;
+    
+    db.all('SELECT * FROM consultations WHERE health_id = ? ORDER BY submission_date DESC', 
+        [healthId], (err, consultations) => {
+        if (err) {
+            console.error('Get consultation history error:', err.message);
+            return res.status(500).json({
+                success: false,
+                message: 'Failed to retrieve consultation history'
+            });
+        }
+        
+        const formattedConsultations = consultations.map(consultation => ({
+            id: consultation.id,
+            subject: consultation.subject,
+            description: consultation.description,
+            urgency: consultation.urgency,
+            preferredLanguage: consultation.preferred_language,
+            attachedImages: consultation.attached_images ? JSON.parse(consultation.attached_images) : [],
+            submissionDate: consultation.submission_date,
+            status: consultation.status,
+            doctorResponse: consultation.doctor_response,
+            responseDate: consultation.response_date
+        }));
+        
+        res.json({
+            success: true,
+            consultations: formattedConsultations
         });
     });
 });

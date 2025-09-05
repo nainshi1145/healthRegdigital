@@ -236,6 +236,7 @@
                         <button class="tab-btn" onclick="showTab('aby')">🏥 ABY Benefits</button>
                         <button class="tab-btn" onclick="showTab('hospitals')">🏨 Find Hospitals</button>
                         <button class="tab-btn" onclick="showTab('family')">👨‍👩‍👧‍👦 Family</button>
+                        <button class="tab-btn" onclick="showTab('consultation')">📷 Medical Images</button>
                     </div>
 
                     <div id="profileTab" class="tab-content active">
@@ -307,6 +308,82 @@
                             </div>
                             
                             <div id="familyMembersList" class="family-members-list"></div>
+                        </div>
+                    </div>
+
+                    <div id="consultationTab" class="tab-content">
+                        <div class="medical-consultation">
+                            <h3>📷 Medical Images & Consultation</h3>
+                            <p>Upload medical images for doctor consultation. Share symptoms, test reports, X-rays, or medical conditions visually.</p>
+                            
+                            <div class="upload-section">
+                                <h4>📤 Upload Medical Images</h4>
+                                <div class="image-upload-area">
+                                    <input type="file" id="medicalImageInput" accept="image/*" multiple style="display: none;">
+                                    <div class="upload-drop-zone" onclick="document.getElementById('medicalImageInput').click();">
+                                        <div class="upload-icon">📷</div>
+                                        <p>Click to select medical images</p>
+                                        <p class="upload-hint">Supports: Photos, X-rays, Test reports, Prescriptions</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="consultation-form">
+                                    <h4>💬 Describe Your Condition</h4>
+                                    <form id="consultationForm">
+                                        <div class="form-group">
+                                            <label for="consultationSubject">Subject:</label>
+                                            <div class="input-with-mic">
+                                                <input type="text" id="consultationSubject" placeholder="e.g., Chest pain, Skin rash, Test results" required>
+                                                <button type="button" class="mic-btn" onclick="startVoiceInput('consultationSubject')">🎤</button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="consultationDescription">Description:</label>
+                                            <div class="input-with-mic">
+                                                <textarea id="consultationDescription" placeholder="Describe your symptoms, when they started, severity, etc." rows="4" required></textarea>
+                                                <button type="button" class="mic-btn" onclick="startVoiceInput('consultationDescription')">🎤</button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="consultationUrgency">Urgency Level:</label>
+                                            <select id="consultationUrgency" required>
+                                                <option value="">Select urgency</option>
+                                                <option value="Low">Low - Routine consultation</option>
+                                                <option value="Medium">Medium - Need response in 24-48 hours</option>
+                                                <option value="High">High - Need urgent attention</option>
+                                                <option value="Emergency">Emergency - Immediate help needed</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="preferredLanguage">Preferred Language for Response:</label>
+                                            <select id="preferredLanguage">
+                                                <option value="English">English</option>
+                                                <option value="Hindi">Hindi (हिंदी)</option>
+                                                <option value="Malayalam">Malayalam (മലയാളം)</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <button type="submit" class="submit-btn">📤 Send Consultation Request</button>
+                                    </form>
+                                </div>
+                            </div>
+                            
+                            <div class="images-gallery">
+                                <h4>🖼️ Your Medical Images</h4>
+                                <div id="medicalImagesGrid" class="medical-images-grid">
+                                    <p class="no-images">No medical images uploaded yet. Upload images to share with doctors.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="consultation-history">
+                                <h4>📋 Consultation History</h4>
+                                <div id="consultationHistoryList" class="consultation-history-list">
+                                    <p class="no-consultations">No consultations yet. Send your first consultation request above.</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -825,6 +902,9 @@
                 loadHospitals();
             } else if (tabName === 'family') {
                 loadFamilyMembers();
+            } else if (tabName === 'consultation') {
+                loadMedicalImages();
+                loadConsultationHistory();
             }
         }
 
@@ -957,6 +1037,243 @@
                     </div>
                 `).join('')}
             `;
+        }
+
+        // Medical Image Management
+        let uploadedImages = [];
+        
+        // Handle image upload
+        document.getElementById('medicalImageInput').addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            
+            files.forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const imageData = {
+                            id: Date.now() + Math.random(),
+                            name: file.name,
+                            size: file.size,
+                            type: file.type,
+                            dataUrl: e.target.result,
+                            uploadDate: new Date().toISOString(),
+                            healthId: currentUser ? currentUser.healthId : null
+                        };
+                        
+                        uploadedImages.push(imageData);
+                        displayMedicalImages();
+                        saveImageToServer(imageData);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // Reset input
+            e.target.value = '';
+        });
+
+        // Save image to server
+        async function saveImageToServer(imageData) {
+            try {
+                const response = await fetch('/upload-medical-image', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(imageData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage('Medical image uploaded successfully!', 'success');
+                } else {
+                    showMessage('Failed to upload image to server', 'error');
+                }
+            } catch (error) {
+                console.error('Image upload error:', error);
+                showMessage('Image upload failed', 'error');
+            }
+        }
+
+        // Display medical images
+        function displayMedicalImages() {
+            const grid = document.getElementById('medicalImagesGrid');
+            
+            if (uploadedImages.length === 0) {
+                grid.innerHTML = '<p class="no-images">No medical images uploaded yet. Upload images to share with doctors.</p>';
+                return;
+            }
+            
+            grid.innerHTML = uploadedImages.map(image => `
+                <div class="medical-image-card" data-image-id="${image.id}">
+                    <div class="image-preview">
+                        <img src="${image.dataUrl}" alt="${image.name}" onclick="viewImageFullscreen('${image.id}')">
+                        <div class="image-overlay">
+                            <button class="delete-image-btn" onclick="deleteImage('${image.id}')">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="image-info">
+                        <p class="image-name">${image.name}</p>
+                        <p class="image-date">${new Date(image.uploadDate).toLocaleDateString()}</p>
+                        <p class="image-size">${(image.size / 1024).toFixed(1)} KB</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // View image in fullscreen
+        function viewImageFullscreen(imageId) {
+            const image = uploadedImages.find(img => img.id == imageId);
+            if (!image) return;
+            
+            const modal = document.createElement('div');
+            modal.className = 'image-modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <span class="close-modal" onclick="this.parentElement.parentElement.remove()">&times;</span>
+                    <img src="${image.dataUrl}" alt="${image.name}">
+                    <div class="modal-info">
+                        <h4>${image.name}</h4>
+                        <p>Uploaded: ${new Date(image.uploadDate).toLocaleString()}</p>
+                        <p>Size: ${(image.size / 1024).toFixed(1)} KB</p>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Close modal when clicking outside
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+        }
+
+        // Delete image
+        function deleteImage(imageId) {
+            if (confirm('Are you sure you want to delete this medical image?')) {
+                uploadedImages = uploadedImages.filter(img => img.id != imageId);
+                displayMedicalImages();
+                
+                // Delete from server
+                fetch('/delete-medical-image', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ imageId })
+                }).catch(console.error);
+                
+                showMessage('Medical image deleted', 'success');
+            }
+        }
+
+        // Consultation form submission
+        document.getElementById('consultationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!currentUser) {
+                showMessage('Please login first', 'error');
+                return;
+            }
+            
+            const formData = new FormData(this);
+            const consultationData = Object.fromEntries(formData);
+            consultationData.healthId = currentUser.healthId;
+            consultationData.patientName = currentUser.name;
+            consultationData.attachedImages = uploadedImages.map(img => img.id);
+            consultationData.submissionDate = new Date().toISOString();
+            
+            try {
+                const response = await fetch('/submit-consultation', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(consultationData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage('Consultation request sent successfully! You will receive a response soon.', 'success');
+                    this.reset();
+                    loadConsultationHistory();
+                } else {
+                    showMessage(result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Consultation submission error:', error);
+                showMessage('Failed to send consultation request', 'error');
+            }
+        });
+
+        // Load medical images
+        async function loadMedicalImages() {
+            if (!currentUser) return;
+            
+            try {
+                const response = await fetch(`/medical-images/${currentUser.healthId}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    uploadedImages = result.images || [];
+                    displayMedicalImages();
+                }
+            } catch (error) {
+                console.error('Load medical images error:', error);
+            }
+        }
+
+        // Load consultation history
+        async function loadConsultationHistory() {
+            if (!currentUser) return;
+            
+            try {
+                const response = await fetch(`/consultation-history/${currentUser.healthId}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayConsultationHistory(result.consultations || []);
+                }
+            } catch (error) {
+                console.error('Load consultation history error:', error);
+            }
+        }
+
+        // Display consultation history
+        function displayConsultationHistory(consultations) {
+            const historyList = document.getElementById('consultationHistoryList');
+            
+            if (consultations.length === 0) {
+                historyList.innerHTML = '<p class="no-consultations">No consultations yet. Send your first consultation request above.</p>';
+                return;
+            }
+            
+            historyList.innerHTML = consultations.map(consultation => `
+                <div class="consultation-item">
+                    <div class="consultation-header">
+                        <h5>${consultation.subject}</h5>
+                        <span class="urgency-badge ${consultation.urgency.toLowerCase()}">${consultation.urgency}</span>
+                        <span class="consultation-date">${new Date(consultation.submissionDate).toLocaleDateString()}</span>
+                    </div>
+                    <p class="consultation-description">${consultation.description}</p>
+                    <div class="consultation-details">
+                        <p><strong>Language:</strong> ${consultation.preferredLanguage}</p>
+                        <p><strong>Images:</strong> ${consultation.attachedImages ? consultation.attachedImages.length : 0} attached</p>
+                        <p><strong>Status:</strong> <span class="status ${consultation.status || 'pending'}">${consultation.status || 'Pending'}</span></p>
+                    </div>
+                    ${consultation.doctorResponse ? `
+                        <div class="doctor-response">
+                            <h6>👨‍⚕️ Doctor's Response:</h6>
+                            <p>${consultation.doctorResponse}</p>
+                            <p class="response-date">Responded: ${new Date(consultation.responseDate).toLocaleDateString()}</p>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
         }
 
         // Helper functions
