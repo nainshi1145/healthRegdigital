@@ -93,8 +93,62 @@
                         </div>
                     </div>
                     <div class="form-buttons">
-                        <button type="button" id="proceedToProfileBtn" onclick="showHealthProfile()">Continue to Health Profile</button>
+                        <button type="button" id="proceedToABYBtn" onclick="showABYVerification()">Verify Ayushman Bharat</button>
+                        <button type="button" id="skipABYBtn" onclick="showHealthProfile()">Skip ABY (Continue)</button>
                     </div>
+                </div>
+
+                <!-- ABY Verification Section -->
+                <div id="abyVerificationSection" class="aby-verification-section" style="display: none;">
+                    <h2 id="abyVerificationTitle">🏥 Ayushman Bharat Yojana Verification</h2>
+                    <p id="abyDescription">Verify your eligibility for ₹5,00,000 annual health insurance coverage</p>
+                    
+                    <form id="abyVerificationForm">
+                        <div class="form-group">
+                            <label for="annualIncome" id="annualIncomeLabel">Annual Family Income (₹):</label>
+                            <div class="input-with-mic">
+                                <input type="number" id="annualIncome" name="annualIncome" placeholder="e.g., 200000" required>
+                                <button type="button" class="mic-btn" onclick="startVoiceInput('annualIncome')">🎤</button>
+                            </div>
+                            <small id="annualIncomeHelp">Income should be ≤ ₹5,00,000 for ABY eligibility</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="familySize" id="familySizeLabel">Family Size:</label>
+                            <select id="familySize" name="familySize" required>
+                                <option value="">Select Family Size</option>
+                                <option value="1">1 member</option>
+                                <option value="2">2 members</option>
+                                <option value="3">3 members</option>
+                                <option value="4">4 members</option>
+                                <option value="5">5 members</option>
+                                <option value="6">6+ members</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="state" id="stateLabel">State:</label>
+                            <div class="input-with-mic">
+                                <input type="text" id="state" name="state" placeholder="e.g., Kerala, Delhi" required>
+                                <button type="button" class="mic-btn" onclick="startVoiceInput('state')">🎤</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="district" id="districtLabel">District:</label>
+                            <div class="input-with-mic">
+                                <input type="text" id="district" name="district" placeholder="e.g., Thiruvananthapuram">
+                                <button type="button" class="mic-btn" onclick="startVoiceInput('district')">🎤</button>
+                            </div>
+                        </div>
+
+                        <div class="form-buttons">
+                            <button type="submit" id="verifyABYBtn">Verify ABY Eligibility</button>
+                            <button type="button" onclick="showHealthProfile()">Skip ABY</button>
+                        </div>
+                    </form>
+
+                    <div id="abyResult" class="aby-result"></div>
                 </div>
 
                 <!-- Health Profile Form -->
@@ -176,7 +230,86 @@
                 <!-- Dashboard Section -->
                 <div id="dashboardSection" class="dashboard-section" style="display: none;">
                     <h2 id="dashboardTitle">Worker Dashboard</h2>
-                    <div id="userProfile" class="user-profile"></div>
+                    
+                    <div class="dashboard-tabs">
+                        <button class="tab-btn active" onclick="showTab('profile')">👤 Profile</button>
+                        <button class="tab-btn" onclick="showTab('aby')">🏥 ABY Benefits</button>
+                        <button class="tab-btn" onclick="showTab('hospitals')">🏨 Find Hospitals</button>
+                        <button class="tab-btn" onclick="showTab('family')">👨‍👩‍👧‍👦 Family</button>
+                    </div>
+
+                    <div id="profileTab" class="tab-content active">
+                        <div id="userProfile" class="user-profile"></div>
+                    </div>
+
+                    <div id="abyTab" class="tab-content">
+                        <div id="abyBenefitsDisplay" class="aby-benefits-display">
+                            <div class="benefits-card">
+                                <h3>🏥 Ayushman Bharat Yojana Benefits</h3>
+                                <div id="abyCardInfo"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="hospitalsTab" class="tab-content">
+                        <div class="hospital-finder">
+                            <h3>🏨 Find Empaneled Hospitals</h3>
+                            <div class="search-controls">
+                                <input type="text" id="hospitalCitySearch" placeholder="Search by city">
+                                <select id="specialtyFilter">
+                                    <option value="">All Specialties</option>
+                                    <option value="Cardiology">Cardiology</option>
+                                    <option value="Neurology">Neurology</option>
+                                    <option value="Oncology">Oncology</option>
+                                    <option value="Orthopedics">Orthopedics</option>
+                                    <option value="General Surgery">General Surgery</option>
+                                    <option value="Pediatrics">Pediatrics</option>
+                                    <option value="Gynecology">Gynecology</option>
+                                </select>
+                                <button onclick="searchHospitals()">Search</button>
+                            </div>
+                            <div id="hospitalsList" class="hospitals-list"></div>
+                        </div>
+                    </div>
+
+                    <div id="familyTab" class="tab-content">
+                        <div class="family-management">
+                            <h3>👨‍👩‍👧‍👦 Family Members</h3>
+                            
+                            <div class="add-family-form">
+                                <h4>Add Family Member</h4>
+                                <form id="addFamilyForm">
+                                    <div class="form-row">
+                                        <input type="text" id="memberName" placeholder="Member Name" required>
+                                        <select id="memberRelation" required>
+                                            <option value="">Relation</option>
+                                            <option value="Spouse">Spouse</option>
+                                            <option value="Son">Son</option>
+                                            <option value="Daughter">Daughter</option>
+                                            <option value="Father">Father</option>
+                                            <option value="Mother">Mother</option>
+                                            <option value="Brother">Brother</option>
+                                            <option value="Sister">Sister</option>
+                                        </select>
+                                        <input type="number" id="memberAge" placeholder="Age" min="0" max="120">
+                                        <select id="memberGender">
+                                            <option value="">Gender</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-row">
+                                        <input type="text" id="memberAadhar" placeholder="Aadhar Number (Optional)" maxlength="12">
+                                        <button type="submit">Add Member</button>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <div id="familyMembersList" class="family-members-list"></div>
+                        </div>
+                    </div>
+
                     <div class="form-buttons">
                         <button type="button" onclick="logout()">Logout</button>
                     </div>
@@ -196,6 +329,7 @@
         let currentHealthId = null;
         let currentUserData = null;
         let currentLanguage = 'en';
+        let currentUser = null;
 
         // Language translations
         const translations = {
@@ -416,9 +550,16 @@
             }
         }
 
+        // Show ABY verification
+        function showABYVerification() {
+            document.getElementById('healthIdSection').style.display = 'none';
+            document.getElementById('abyVerificationSection').style.display = 'block';
+        }
+
         // Show health profile form
         function showHealthProfile() {
             document.getElementById('healthIdSection').style.display = 'none';
+            document.getElementById('abyVerificationSection').style.display = 'none';
             document.getElementById('healthProfileSection').style.display = 'block';
         }
 
@@ -507,14 +648,67 @@
             }, 3000);
         });
 
-        // Login functionality
+        // ABY Verification form submission
+        document.getElementById('abyVerificationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const abyData = Object.fromEntries(formData);
+            abyData.healthId = currentHealthId;
+            
+            try {
+                const response = await fetch('/verify-aby', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(abyData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    document.getElementById('abyResult').innerHTML = `
+                        <div class="aby-success">
+                            <h3>✅ ${result.message}</h3>
+                            <div class="aby-card">
+                                <p><strong>ABY Card Number:</strong> ${result.abyData.cardNumber}</p>
+                                <p><strong>Coverage Amount:</strong> ₹${result.abyData.coverageAmount.toLocaleString()}</p>
+                                <p><strong>Family Size:</strong> ${result.abyData.familySize} members</p>
+                                <p><strong>Status:</strong> Active</p>
+                            </div>
+                            <div class="success-actions">
+                                <button onclick="showHealthProfile()" class="action-btn">Continue to Health Profile</button>
+                            </div>
+                        </div>
+                    `;
+                    showMessage('ABY verification successful!', 'success');
+                } else {
+                    document.getElementById('abyResult').innerHTML = `
+                        <div class="aby-error">
+                            <h3>❌ ABY Verification Failed</h3>
+                            <p>${result.message}</p>
+                            <div class="error-actions">
+                                <button onclick="showHealthProfile()" class="action-btn">Continue without ABY</button>
+                            </div>
+                        </div>
+                    `;
+                    showMessage(result.message, 'error');
+                }
+            } catch (error) {
+                showMessage('ABY verification failed. Please try again.', 'error');
+                console.error('ABY verification error:', error);
+            }
+        });
+
+        // Login functionality (Enhanced with ABY)
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const healthId = document.getElementById('loginHealthId').value;
             
             try {
-                const response = await fetch('/login', {
+                const response = await fetch('/login-with-aby', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -525,8 +719,13 @@
                 const result = await response.json();
                 
                 if (result.success) {
+                    currentUser = result.user;
                     showDashboard(result.user);
                     showMessage(result.message, 'success');
+                    
+                    // Load additional data
+                    loadHospitals();
+                    loadFamilyMembers();
                 } else {
                     showMessage(result.message, 'error');
                 }
@@ -541,6 +740,7 @@
             document.getElementById('loginSection').style.display = 'none';
             document.getElementById('dashboardSection').style.display = 'block';
             
+            // Update profile tab
             document.getElementById('userProfile').innerHTML = `
                 <div class="profile-card">
                     <h3>👤 ${user.name}</h3>
@@ -549,6 +749,7 @@
                     <p><strong>City:</strong> ${user.city}</p>
                     <p><strong>Blood Group:</strong> ${user.bloodGroup}</p>
                     <p><strong>Date of Birth:</strong> ${user.dateOfBirth}</p>
+                    <p><strong>Aadhar:</strong> ${user.aadharNumber || 'Not provided'}</p>
                     <p><strong>Fingerprint Scanned:</strong> ${user.fingerprintScanned ? '✅ Yes' : '❌ No'}</p>
                     
                     <div class="health-details">
@@ -562,6 +763,210 @@
                     <p><strong>Registered:</strong> ${new Date(user.createdAt).toLocaleDateString()}</p>
                 </div>
             `;
+            
+            // Update ABY benefits tab
+            if (user.abyBenefits) {
+                document.getElementById('abyCardInfo').innerHTML = `
+                    <div class="aby-card-details">
+                        <div class="card-header">
+                            <h4>🏥 ABY Golden Card</h4>
+                            <span class="card-status active">Active</span>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Card Number:</strong> ${user.abyBenefits.cardNumber}</p>
+                            <p><strong>Beneficiary:</strong> ${user.name}</p>
+                            <p><strong>Family Size:</strong> ${user.abyBenefits.familySize} members</p>
+                            <p><strong>State:</strong> ${user.abyBenefits.state || user.city}</p>
+                            <p><strong>District:</strong> ${user.abyBenefits.district || 'Not specified'}</p>
+                        </div>
+                        <div class="coverage-info">
+                            <h4>💰 Coverage Information</h4>
+                            <div class="coverage-bar">
+                                <div class="coverage-used" style="width: ${(user.abyBenefits.usedAmount / user.abyBenefits.coverageAmount) * 100}%"></div>
+                            </div>
+                            <p><strong>Total Coverage:</strong> ₹${user.abyBenefits.coverageAmount.toLocaleString()}</p>
+                            <p><strong>Used Amount:</strong> ₹${user.abyBenefits.usedAmount.toLocaleString()}</p>
+                            <p><strong>Remaining:</strong> ₹${user.abyBenefits.remainingAmount.toLocaleString()}</p>
+                        </div>
+                        <div class="qr-section">
+                            <p>📱 <strong>Show this card at empaneled hospitals for cashless treatment</strong></p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                document.getElementById('abyCardInfo').innerHTML = `
+                    <div class="no-aby">
+                        <h4>❌ No ABY Benefits Found</h4>
+                        <p>You are not enrolled in Ayushman Bharat Yojana.</p>
+                        <button onclick="logout(); showRegistration();" class="action-btn">Register for ABY</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Tab switching functionality
+        function showTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(tab => tab.classList.remove('active'));
+            
+            // Remove active class from all tab buttons
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            tabBtns.forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected tab content
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            
+            // Add active class to clicked tab button
+            event.target.classList.add('active');
+            
+            // Load specific data based on tab
+            if (tabName === 'hospitals') {
+                loadHospitals();
+            } else if (tabName === 'family') {
+                loadFamilyMembers();
+            }
+        }
+
+        // Hospital search functionality
+        async function searchHospitals() {
+            const city = document.getElementById('hospitalCitySearch').value;
+            const specialty = document.getElementById('specialtyFilter').value;
+            
+            try {
+                const queryParams = new URLSearchParams();
+                if (city) queryParams.append('city', city);
+                if (specialty) queryParams.append('specialty', specialty);
+                queryParams.append('limit', '20');
+                
+                const response = await fetch(`/empaneled-hospitals?${queryParams}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayHospitals(result.hospitals);
+                } else {
+                    showMessage('Failed to load hospitals', 'error');
+                }
+            } catch (error) {
+                console.error('Hospital search error:', error);
+                showMessage('Hospital search failed', 'error');
+            }
+        }
+
+        // Load hospitals
+        async function loadHospitals() {
+            await searchHospitals();
+        }
+
+        // Display hospitals
+        function displayHospitals(hospitals) {
+            const hospitalsList = document.getElementById('hospitalsList');
+            
+            if (hospitals.length === 0) {
+                hospitalsList.innerHTML = '<p>No hospitals found matching your criteria.</p>';
+                return;
+            }
+            
+            hospitalsList.innerHTML = hospitals.map(hospital => `
+                <div class="hospital-card">
+                    <h4>🏨 ${hospital.name}</h4>
+                    <p><strong>Code:</strong> ${hospital.code}</p>
+                    <p><strong>Address:</strong> ${hospital.address}, ${hospital.city}, ${hospital.state}</p>
+                    <p><strong>Phone:</strong> ${hospital.phone}</p>
+                    <p><strong>Specialties:</strong> ${hospital.specialties.join(', ')}</p>
+                    <div class="hospital-actions">
+                        <button class="action-btn" onclick="callHospital('${hospital.phone}')">📞 Call</button>
+                        <button class="action-btn" onclick="getDirections('${hospital.address}')">🗺️ Directions</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Family member management
+        document.getElementById('addFamilyForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!currentUser) {
+                showMessage('Please login first', 'error');
+                return;
+            }
+            
+            const formData = new FormData(this);
+            const memberData = Object.fromEntries(formData);
+            memberData.primaryHealthId = currentUser.healthId;
+            
+            try {
+                const response = await fetch('/add-family-member', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(memberData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage('Family member added successfully!', 'success');
+                    this.reset();
+                    loadFamilyMembers();
+                } else {
+                    showMessage(result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Add family member error:', error);
+                showMessage('Failed to add family member', 'error');
+            }
+        });
+
+        // Load family members
+        async function loadFamilyMembers() {
+            if (!currentUser) return;
+            
+            try {
+                const response = await fetch(`/family-members/${currentUser.healthId}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayFamilyMembers(result.familyMembers);
+                }
+            } catch (error) {
+                console.error('Load family members error:', error);
+            }
+        }
+
+        // Display family members
+        function displayFamilyMembers(members) {
+            const familyList = document.getElementById('familyMembersList');
+            
+            if (members.length === 0) {
+                familyList.innerHTML = '<p>No family members added yet.</p>';
+                return;
+            }
+            
+            familyList.innerHTML = `
+                <h4>Family Members (${members.length})</h4>
+                ${members.map(member => `
+                    <div class="family-member-card">
+                        <h5>👤 ${member.name}</h5>
+                        <p><strong>Relation:</strong> ${member.relation}</p>
+                        <p><strong>Age:</strong> ${member.age || 'Not specified'}</p>
+                        <p><strong>Gender:</strong> ${member.gender || 'Not specified'}</p>
+                        ${member.healthId ? `<p><strong>Health ID:</strong> ${member.healthId}</p>` : ''}
+                        ${member.aadharNumber ? `<p><strong>Aadhar:</strong> ${member.aadharNumber}</p>` : ''}
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        // Helper functions
+        function callHospital(phone) {
+            window.open(`tel:${phone}`);
+        }
+
+        function getDirections(address) {
+            const encodedAddress = encodeURIComponent(address);
+            window.open(`https://maps.google.com/maps?q=${encodedAddress}`, '_blank');
         }
 
         // Navigation functions
@@ -586,7 +991,7 @@
         }
 
         function hideAllSections() {
-            const sections = ['basicForm', 'healthIdSection', 'healthProfileSection', 'fingerprintSection', 'loginSection', 'dashboardSection'];
+            const sections = ['basicForm', 'healthIdSection', 'abyVerificationSection', 'healthProfileSection', 'fingerprintSection', 'loginSection', 'dashboardSection'];
             sections.forEach(id => {
                 const element = document.getElementById(id);
                 if (element) element.style.display = 'none';
